@@ -7,10 +7,13 @@ const App = () => {
     useEffect(() => {
         const fetchData = async () => {
             const result = await readTodo();
+            setToDo(result);
             console.log(result);
         };
         fetchData();
     }, []);
+
+    const [todo, setToDo] = useState(null);
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
@@ -61,21 +64,26 @@ const App = () => {
                         </button>
                     </div>
                 </form>
-                <Preloader />
-                <div className="collection">
-                    <a href="#!" className="collection-item active">
-                        Alvin
-                    </a>
-                    <a href="#!" className="collection-item">
-                        Alvin
-                    </a>
-                    <a href="#!" className="collection-item">
-                        Alvin
-                    </a>
-                    <a href="#!" className="collection-item">
-                        Alvin
-                    </a>
-                </div>
+                {!todo ? (
+                    <Preloader />
+                ) : todo?.length > 0 ? (
+                    <ul className="collection">
+                        {todo?.map((itemTodo, idx) => (
+                            <li class="collection-item" key={idx}>
+                                <h5>{itemTodo.title}</h5>
+                                <p>{itemTodo.content}</p>
+                                <a
+                                    href="#!"
+                                    class="secondary-content"
+                                    style={{ paddingTop: "20px" }}>
+                                    <i class="material-icons">delete</i>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div>Nothing to do!</div>
+                )}
             </div>
         </div>
     );
