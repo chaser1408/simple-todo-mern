@@ -1,7 +1,12 @@
 import express from "express";
-import { createTodos, readTodos } from "../controller/todoController.js";
+import {
+    readTodos,
+    createTodos,
+    updateTodos,
+} from "../controller/todoController.js";
 
 const router = express.Router();
-router.get('/', readTodos);
-router.post('/', createTodos);
+router.get("/", readTodos);
+router.post("/", createTodos);
+router.patch("/:id", updateTodos);
 export default router;

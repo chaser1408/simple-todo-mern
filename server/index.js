@@ -5,7 +5,7 @@ import cors from "cors";
 import todoRoutes from "./routes/todoRoutes.js";
 const app = express();
 dotenv.config();
-app.use(express.json({ extended: true }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/todos", todoRoutes);

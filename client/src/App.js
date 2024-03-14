@@ -1,9 +1,31 @@
 import { useEffect, useState } from "react";
 import Preloader from "./components/Preloader";
-import { createTodo, readTodo } from "./functions/indexFunction.js";
+import { createTodo, readTodo, updateTodo } from "./functions/indexFunction.js";
 
 const App = () => {
     const [newTodo, setNewTodo] = useState({ title: "", content: "" });
+    const [todo, setToDo] = useState(null);
+    const [currentId, setCurrentId] = useState(0);
+
+    useEffect(() => {
+        const clearField = (e) => {
+            if (e.keyCode === 27) {
+                clear();
+            }
+        };
+
+        window.addEventListener("keydown", clearField);
+        return () => window.removeEventListener("keydown", clearField);
+    }, []);
+
+    useEffect(() => {
+        let currentTodo =
+            currentId !== 0
+                ? todo?.find((todo) => todo._id === currentId)
+                : { title: "", content: "" };
+        setNewTodo(currentTodo);
+    }, [currentId, todo]);
+
     useEffect(() => {
         const fetchData = async () => {
             const result = await readTodo();
@@ -11,14 +33,23 @@ const App = () => {
             console.log(result);
         };
         fetchData();
-    }, []);
+    }, [currentId]);
 
-    const [todo, setToDo] = useState(null);
+    const clear = () => {
+        setCurrentId(0);
+        setNewTodo({ title: "", content: "" });
+    };
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-        const result = await createTodo(newTodo);
-        console.log(result, "dataPost");
+        if (currentId === 0) {
+            const result = await createTodo(newTodo);
+            setToDo([...todo, result]);
+            clear();
+        } else {
+            await updateTodo(currentId, newTodo);
+            clear();
+        }
     };
 
     return (
@@ -33,6 +64,8 @@ const App = () => {
                                 id="icon_prefix"
                                 type="text"
                                 className="validate"
+                                value={newTodo.title}
+                                active={newTodo.toString()}
                                 onChange={(e) =>
                                     setNewTodo({
                                         ...newTodo,
@@ -48,6 +81,8 @@ const App = () => {
                                 id="description"
                                 type="tel"
                                 className="validate"
+                                value={newTodo.content}
+                                active={newTodo.toString()}
                                 onChange={(e) =>
                                     setNewTodo({
                                         ...newTodo,
@@ -68,15 +103,22 @@ const App = () => {
                     <Preloader />
                 ) : todo?.length > 0 ? (
                     <ul className="collection">
-                        {todo?.map((itemTodo, idx) => (
-                            <li class="collection-item" key={idx}>
+                        {todo?.map((itemTodo) => (
+                            <li
+                                className="collection-item"
+                                key={itemTodo._id}
+                                onClick={() => setCurrentId(itemTodo._id)}>
                                 <h5>{itemTodo.title}</h5>
                                 <p>{itemTodo.content}</p>
                                 <a
                                     href="#!"
-                                    class="secondary-content"
-                                    style={{ paddingTop: "20px" }}>
-                                    <i class="material-icons">delete</i>
+                                    className="secondary-content"
+                                    style={{
+                                        position: "relative",
+                                        top: "-65px",
+                                        right: " 30px",
+                                    }}>
+                                    <i className="material-icons">delete</i>
                                 </a>
                             </li>
                         ))}

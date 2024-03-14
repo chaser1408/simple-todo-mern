@@ -17,3 +17,12 @@ export const createTodo = async (newTodo) => {
         console.log(error);
     }
 };
+
+export const updateTodo = async (id, todo) => {
+    try {
+        const { data } = await api.updateTodoApi(id, todo);
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+};
