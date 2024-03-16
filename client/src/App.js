@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import Preloader from "./components/Preloader";
-import { createTodo, readTodo, updateTodo } from "./functions/indexFunction.js";
+import {
+    createTodo,
+    deleteTodo,
+    readTodo,
+    updateTodo,
+} from "./functions/indexFunction.js";
 
 const App = () => {
     const [newTodo, setNewTodo] = useState({ title: "", content: "" });
@@ -52,6 +57,14 @@ const App = () => {
         }
     };
 
+    const deleteTodoHandler = async (id) => {
+        await deleteTodo(id);
+        const todosCopy = [...todo];
+        todosCopy.filter((todo) => todo._id !== id);
+        setToDo(todosCopy);
+        clear();
+    };
+
     return (
         <div className="container">
             <div className="row">
@@ -95,7 +108,7 @@ const App = () => {
                     </div>
                     <div className="row right-align">
                         <button className="waves-effect waves-light btn">
-                            Create
+                            Submit!!
                         </button>
                     </div>
                 </form>
@@ -117,7 +130,10 @@ const App = () => {
                                         position: "relative",
                                         top: "-65px",
                                         right: " 30px",
-                                    }}>
+                                    }}
+                                    onClick={() =>
+                                        deleteTodoHandler(itemTodo._id)
+                                    }>
                                     <i className="material-icons">delete</i>
                                 </a>
                             </li>
